@@ -5,9 +5,17 @@
 
 #define PI 3.141592653589793
 #define RAD (PI / 180)
+#define DEG (180 / PI)
+#define SAMPLE_SIZE 5
+#define FIVE_MINS 300000
 
 Servo servo;
 int i2c_add = 0x68;
+
+// Váriaveis para modificar
+unsigned long long EPOCH = 1721252717; // mudar na hora de executar
+double LAT = -20.27278;
+double LNG = -40.30556;
 
 struct SunCoords {
     double dec;
@@ -122,8 +130,9 @@ void get_gyro_data(int gyro_add, int16_t* gyro_array) {
     gyro_array[0] = Wire.read() << 8 | Wire.read();
 }
 
+// Função responsável por converter o valor do giroscópio em um angulo entre 60-180 (em graus)
 int normalize_gyro(int gyro_angle) {
-    return ((gyro_angle - gyro_start) / (gyro_end - gyro_start)) * (180);
+    return ((gyro_angle - gyro_start) / (gyro_end - gyro_start)) * (120) + 60;
 }
 
 // ESSA FUNCAO PRECISA SER CONTINUAMENTE CHAMADA EM LOOP
@@ -149,6 +158,47 @@ void update_servo(double servo_speed, double starting_angle) {
     delay(4);
 }
 
+// Função para pegar a média de um vetor
+float get_avg(int size , int* arr){
+    int sum = 0;
+    for(int i = 0; i < size; i++){
+        sum += arr[i];
+    }
+    return sum/float(size);
+}
+
+// Função que realiza o seguimento do sol
+void sun_track(unsigned long long date, double lat, double lng){
+    Position p = getPosition(date,lat,lng);
+    float target = p.altitude * DEG;
+    int avg_arr[SAMPLE_SIZE];
+    int cycle = 0;
+    float mov_avg = 0;
+    int gyro[2];
+
+    for(int i = 0; i < SAMPLE_SIZE; i++){
+        get_gyro_data(i2c_add,gyro);
+        delay(10);
+        avg_arr[i] = gyro[0];
+    }
+    mov_avg = normalize_gyro(get_avg(SAMPLE_SIZE, avg_arr));
+
+    // Vai fazendo a média móvel e termina quando o ângulo da média for maior ou igual ao alvo
+    while(mov_avg >= target){
+        get_gyro_data(i2c_add,gyro);
+        delay(10);
+
+        //Isso vai substituindo cada elemento do vetor de maneira circular
+        avg_arr[cycle++] = gyro[0];
+        cycle %= SAMPLE_SIZE;
+
+        //Vai movendo o servo linearmente
+        update_servo(1.0,normalize_gyro(gyro[0]));
+
+        mov_avg = normalize_gyro(get_avg(SAMPLE_SIZE, avg_arr));
+    }
+}
+
 double boot_angle = 0;
 
 void setup() {
@@ -169,7 +219,7 @@ void setup() {
 // NAO PODE USAR DELAY NESSE LOOP POIS O
 // SERVO NAO VAI FUNCIONAR DIREITO
 void loop() {
-    int16_t gyro[2];
+    // int16_t gyro[2];
 
     // TODO:
     // calcular a posição do sol e salvar em uma variável
@@ -178,25 +228,28 @@ void loop() {
     // realizar o movimento verificando o angulo e o botão do anemômetro em cada iteração, assim que chegar no angulo >= correto, break (para isso usaremos um while true)
     // colocar um wait de 5 minutos para a próxima iteração do loop principal. O wait deverá ser um loop para poder verificar se o botão do anemometro esta apertado de tempo em tempo.
 
-    double instant_speed = 1;
-    for (int i = 0; i < 500; i++) {
-        get_gyro_data(i2c_add, gyro);
-        Serial.print("x = ");
-        Serial.print(gyro[0]);
-        Serial.print(" | y = ");
-        Serial.println(gyro[1]);
-        update_servo(instant_speed, boot_angle);
-    }
+    sun_track(EPOCH,LAT,LNG);
+    delay(FIVE_MINS);
 
-    Serial.println("-------------------");
+    // double instant_speed = 1;
+    // for (int i = 0; i < 500; i++) {
+    //     get_gyro_data(i2c_add, gyro);
+    //     Serial.print("x = ");
+    //     Serial.print(gyro[0]);
+    //     Serial.print(" | y = ");
+    //     Serial.println(gyro[1]);
+    //     update_servo(instant_speed, boot_angle);
+    // }
 
-    instant_speed = -1;
-    for (int i = 0; i < 500; i++) {
-        get_gyro_data(i2c_add, gyro);
-        Serial.print("x = ");
-        Serial.print(gyro[0]);
-        Serial.print(" | y = ");
-        Serial.println(gyro[1]);
-        update_servo(instant_speed, boot_angle);
-    }
+    // Serial.println("-------------------");
+
+    // instant_speed = -1;
+    // for (int i = 0; i < 500; i++) {
+    //     get_gyro_data(i2c_add, gyro);
+    //     Serial.print("x = ");
+    //     Serial.print(gyro[0]);
+    //     Serial.print(" | y = ");
+    //     Serial.println(gyro[1]);
+    //     update_servo(instant_speed, boot_angle);
+    // }
 }
