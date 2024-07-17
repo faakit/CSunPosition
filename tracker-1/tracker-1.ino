@@ -175,6 +175,11 @@ void loop() {
   int16_t gyro[2];
   //aqui podemos variar a velocidade do servo mudando ela em cada iteracao
 
+  // calcular a posição do sol e salvar em uma variável
+  // pegar o valor de leitura do angulo e comparar com a posição do sol
+  // fazer um if else para decidir em qual direção seguir
+  // realizar o movimento verificando o angulo e o botão do anemômetro em cada iteração, assim que chegar no angulo correto, break
+  // colocar um wait de 5 minutos para a próxima iteração do loop principal. O wait deverá ser um loop para poder verificar se o botão do anemometro esta apertado de tempo em tempo.
   double instant_speed = 1;
   for(int i = 0; i<500; i++){
     get_gyro_data(i2c_add, gyro);
