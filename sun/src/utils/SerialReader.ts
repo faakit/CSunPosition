@@ -2,7 +2,7 @@ const { SerialPort } = require("serialport");
 import { ReadlineParser as Readline } from "@serialport/parser-readline";
 
 // mudem isso aqui pra porta e o baudRate que vcs estão usando aí
-const port = new SerialPort({
+export const port = new SerialPort({
   path: "/dev/ttyACM0",
   baudRate: 9600,
 });
