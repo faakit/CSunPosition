@@ -13,9 +13,6 @@ export default function App() {
     const width = (maxWidth / 24) * time;
     const maxHeight = window.innerHeight;
 
-    console.log(maxWidth, maxHeight);
-    console.log((2 * Math.sqrt(maxHeight)) / maxWidth);
-
     let position = {
       x: width - 70,
       y:
@@ -23,8 +20,6 @@ export default function App() {
           Math.sqrt(maxHeight)) **
         2,
     };
-
-    console.log(position);
 
     return position;
   }
