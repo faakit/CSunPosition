@@ -1,4 +1,4 @@
-// #include <math.h>
+#include <math.h>
 // #include <stdio.h>
 #include <Servo.h>
 #include <Wire.h>
@@ -13,7 +13,7 @@ Servo servo;
 int i2c_add = 0x68;
 
 // Váriaveis para modificar
-unsigned long long EPOCH = 1721252717; // mudar na hora de executar
+unsigned long long EPOCH = 1721660902; // mudar na hora de executar
 double LAT = -20.27278;
 double LNG = -40.30556;
 
@@ -94,26 +94,26 @@ void setup_gyro(int gyro_add) {
     Wire.write(0);
     Wire.endTransmission(true);
 
-    //"calibração do gyroscopio"
-    int16_t gyro[2];
-    int sum = 0;
+    // //"calibração do gyroscopio"
+    // int16_t gyro[2];
+    // int sum = 0;
 
-    servo.write(0);
-    for (int i = 0; i < 3; i++) {
-        get_gyro_data(i2c_add, gyro);
-        delay(100);
-        sum += gyro[0];
-    }
-    gyro_start = sum / 3;
+    // servo.write(0);
+    // for (int i = 0; i < 3; i++) {
+    //     get_gyro_data(i2c_add, gyro);
+    //     delay(100);
+    //     sum += gyro[0];
+    // }
+    // gyro_start = sum / 3;
 
-    servo.write(180);
-    sum = 0;
-    for (int i = 0; i < 3; i++) {
-        get_gyro_data(i2c_add, gyro);
-        delay(100);
-        sum += gyro[0];
-    }
-    gyro_end = sum / 3;
+    // servo.write(180);
+    // sum = 0;
+    // for (int i = 0; i < 3; i++) {
+    //     get_gyro_data(i2c_add, gyro);
+    //     delay(100);
+    //     sum += gyro[0];
+    // }
+    // gyro_end = sum / 3;
 }
 
 // coloca os valores dos eixos x e y no array
@@ -131,9 +131,9 @@ void get_gyro_data(int gyro_add, int16_t* gyro_array) {
 }
 
 // Função responsável por converter o valor do giroscópio em um angulo entre 60-180 (em graus)
-int normalize_gyro(int gyro_angle) {
-    return ((gyro_angle - gyro_start) / (gyro_end - gyro_start)) * (120) + 60;
-}
+// int normalize_gyro(int gyro_angle) {
+//     return ((gyro_angle - gyro_start) / (gyro_end - gyro_start)) * (120) + 60;
+// }
 
 // ESSA FUNCAO PRECISA SER CONTINUAMENTE CHAMADA EM LOOP
 void update_servo(double servo_speed, double starting_angle) {
@@ -148,10 +148,10 @@ void update_servo(double servo_speed, double starting_angle) {
 
     static double servo_angle = starting_angle;
 
-    if (servo_angle >= 180) {
-        servo_angle = 180;
-    } else if (servo_angle <= 60) {
-        servo_angle = 60;
+    if (servo_angle >= 150) {
+        servo_angle = 150;
+    } else if (servo_angle <= 0) {
+        servo_angle = 0;
     }
 
     servo.write(servo_angle += servo_speed);
@@ -159,47 +159,50 @@ void update_servo(double servo_speed, double starting_angle) {
 }
 
 // Função para pegar a média de um vetor
-float get_avg(int size , int* arr){
-    int sum = 0;
-    for(int i = 0; i < size; i++){
-        sum += arr[i];
-    }
-    return sum/float(size);
-}
+// float get_avg(int size , int* arr){
+//     int sum = 0;
+//     for(int i = 0; i < size; i++){
+//         sum += arr[i];
+//     }
+//     return sum/float(size);
+// }
 
-// Função que realiza o seguimento do sol
-void sun_track(unsigned long long date, double lat, double lng){
-    Position p = getPosition(date,lat,lng);
-    float target = p.altitude * DEG;
-    int avg_arr[SAMPLE_SIZE];
-    int cycle = 0;
-    float mov_avg = 0;
-    int gyro[2];
+// // Função que realiza o seguimento do sol
+// void sun_track(unsigned long long date, double lat, double lng){
+//     Position p = getPosition(date,lat,lng);
+//     float target = p.altitude * DEG;
+//     int avg_arr[SAMPLE_SIZE];
+//     int cycle = 0;
+//     float mov_avg = 0;
+//     int gyro[2];
 
-    for(int i = 0; i < SAMPLE_SIZE; i++){
-        get_gyro_data(i2c_add,gyro);
-        delay(10);
-        avg_arr[i] = gyro[0];
-    }
-    mov_avg = normalize_gyro(get_avg(SAMPLE_SIZE, avg_arr));
+//     for(int i = 0; i < SAMPLE_SIZE; i++){
+//         get_gyro_data(i2c_add,gyro);
+//         delay(10);
+//         avg_arr[i] = gyro[0];
+//     }
+//     mov_avg = normalize_gyro(get_avg(SAMPLE_SIZE, avg_arr));
 
-    // Vai fazendo a média móvel e termina quando o ângulo da média for maior ou igual ao alvo
-    while(mov_avg >= target){
-        get_gyro_data(i2c_add,gyro);
-        delay(10);
+//     // Vai fazendo a média móvel e termina quando o ângulo da média for maior ou igual ao alvo
+//     while(mov_avg >= target){
+//         get_gyro_data(i2c_add,gyro);
+//         delay(10);
 
-        //Isso vai substituindo cada elemento do vetor de maneira circular
-        avg_arr[cycle++] = gyro[0];
-        cycle %= SAMPLE_SIZE;
+//         //Isso vai substituindo cada elemento do vetor de maneira circular
+//         avg_arr[cycle++] = gyro[0];
+//         cycle %= SAMPLE_SIZE;
 
-        //Vai movendo o servo linearmente
-        update_servo(1.0,normalize_gyro(gyro[0]));
+//         //Vai movendo o servo linearmente
+//         update_servo(1.0,normalize_gyro(gyro[0]));
 
-        mov_avg = normalize_gyro(get_avg(SAMPLE_SIZE, avg_arr));
-    }
-}
+//         mov_avg = normalize_gyro(get_avg(SAMPLE_SIZE, avg_arr));
+//     }
+// }
 
 double boot_angle = 0;
+int agr = 0;
+Position init_position;
+double target = 0;
 
 void setup() {
     // pino PWM do servo
@@ -212,44 +215,48 @@ void setup() {
     Serial.begin(115200);
 
     // posicao inicial do servo
-    servo.write(boot_angle);
+    //servo.write(boot_angle);
     delay(2000);  // <--- Enquanto o servo gira a execucao continua
+    agr = millis();
+    init_position = getPosition(EPOCH+agr,LAT,LNG);
+    target = init_position.azimuth-90.0;
+}
+
+double normalize(int16_t reading){
+  return ((10.0-170.0)/28084)*(reading + 13872.44) + 170.0; 
 }
 
 // NAO PODE USAR DELAY NESSE LOOP POIS O
 // SERVO NAO VAI FUNCIONAR DIREITO
+
+int count = 0;
+int dps = 0;
+
 void loop() {
+
+    init_position = getPosition(EPOCH,LAT,LNG);
+    target = init_position.azimuth * DEG;
+    Serial.println(target);
+
     // int16_t gyro[2];
+    // get_gyro_data(i2c_add, gyro);
+    // double gyro_value = normalize(gyro[0]);
 
-    // TODO:
-    // calcular a posição do sol e salvar em uma variável
-    // pegar o valor de leitura do angulo e comparar com a posição do sol
-    // fazer um if else para decidir em qual direção seguir
-    // realizar o movimento verificando o angulo e o botão do anemômetro em cada iteração, assim que chegar no angulo >= correto, break (para isso usaremos um while true)
-    // colocar um wait de 5 minutos para a próxima iteração do loop principal. O wait deverá ser um loop para poder verificar se o botão do anemometro esta apertado de tempo em tempo.
-
-    sun_track(EPOCH,LAT,LNG);
-    delay(FIVE_MINS);
-
-    // double instant_speed = 1;
-    // for (int i = 0; i < 500; i++) {
-    //     get_gyro_data(i2c_add, gyro);
-    //     Serial.print("x = ");
-    //     Serial.print(gyro[0]);
-    //     Serial.print(" | y = ");
-    //     Serial.println(gyro[1]);
-    //     update_servo(instant_speed, boot_angle);
+    // if(gyro_value <= target){
+    //   update_servo(0.2, 0);
+    //   get_gyro_data(i2c_add, gyro);
+    //   gyro_value = normalize(gyro[0]);
     // }
 
-    // Serial.println("-------------------");
+    // dps = millis();
+    // if(dps-agr > 250){
+    //   agr = dps;
+    //   init_position = getPosition(EPOCH+millis(),LAT,LNG);
+    //   // if(init_position.altitude * DEG < 0.0f) target = 90;
+    //   target = init_position.azimuth * DEG;
 
-    // instant_speed = -1;
-    // for (int i = 0; i < 500; i++) {
-    //     get_gyro_data(i2c_add, gyro);
-    //     Serial.print("x = ");
-    //     Serial.print(gyro[0]);
-    //     Serial.print(" | y = ");
-    //     Serial.println(gyro[1]);
-    //     update_servo(instant_speed, boot_angle);
+    //   Serial.println(target);
     // }
+
+    // Serial.println(init_position.azimuth);
 }
