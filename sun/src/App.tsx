@@ -13,15 +13,13 @@ export default function App() {
     const width = (maxWidth / 24) * time;
     const maxHeight = window.innerHeight;
 
-    let position = {
+    return {
       x: width - 70,
       y:
         (((2 * Math.sqrt(maxHeight)) / maxWidth) * width -
           Math.sqrt(maxHeight)) **
         2,
     };
-
-    return position;
   }
 
   function sliderHandler(value: number) {
