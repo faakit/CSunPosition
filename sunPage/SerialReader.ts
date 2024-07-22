@@ -4,7 +4,7 @@ import { ReadlineParser as Readline } from "@serialport/parser-readline";
 // mudem isso aqui pra porta e o baudRate que vcs estão usando aí
 const port = new SerialPort({
   path: "/dev/ttyACM0",
-  baudRate: 9600,
+  baudRate: 115200,
 });
 
 port.write("SerialReader connected", function (err) {
