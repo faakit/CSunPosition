@@ -25,6 +25,7 @@ struct SunCoords {
 struct Position {
     double azimuth;
     double altitude;
+    double rotation;
 };
 
 const double dayMs = 1000 * 60 * 60 * 24;
@@ -80,6 +81,7 @@ Position getPosition(unsigned long long date, double lat, double lng) {
     Position pos;
     pos.azimuth = azimuth(H, phi, c.dec);
     pos.altitude = altitude(H, phi, c.dec);
+    pos.rotation = atan(tan(PI/2-pos.altitude)*sin(pos.azimuth)); // talvez corrigir o azimuth para ficar contar apartir do norte (adicionar PI ao azimuth)
     return pos;
 }
 
