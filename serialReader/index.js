@@ -47,7 +47,7 @@ arduinoPort.open(function (err) {
   });
 });
 
-parser.on("serial", function (data) {
+parser.on("data", function (data) {
   console.log("Parser:", data);
-  io.emit("parser", { data });
+  io.emit("serial", { data });
 });

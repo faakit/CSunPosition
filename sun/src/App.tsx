@@ -10,9 +10,11 @@ export default function App() {
   const [time, setTime] = useState(0);
   const socket = io('http://localhost:8888');
 
-  socket.on('serial', (data) => {
-    console.log('parser: ', data)
-    setTime(Number(data))
+  socket.on('serial', ({ data }) => {
+    console.log('Saida serial arduino: ', data)
+    const parsedNumber = Number(data.replace('\r', ''))
+    setTime(parsedNumber)
+    setPosition(sunPosition(parsedNumber));
   });
 
   function sunPosition(time: number): { x: number; y: number } {
