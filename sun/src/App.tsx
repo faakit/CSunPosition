@@ -11,7 +11,11 @@ export default function App() {
   const socket = io('http://localhost:8888');
   
   socket.on('serialdata', (data) => {
-    console.log(data)
+    console.log('serialdata: ', data)
+  });
+
+  socket.on('parser', (data) => {
+    console.log('parser: ', data)
   });
 
   function sunPosition(time: number): { x: number; y: number } {

@@ -4,8 +4,8 @@ var express = require("express"),
   io = require("socket.io")(server, {
     cors: {
       origin: "*",
-      methods: ["GET", "POST"]
-    }
+      methods: ["GET", "POST"],
+    },
   }),
   port = 8888;
 
@@ -23,12 +23,15 @@ function onConnection(socket) {
 }
 
 const { SerialPort } = require("serialport");
+const { ByteLengthParser } = require("@serialport/parser-byte-length");
 
-var arduinoPort = new SerialPort({
+const arduinoPort = new SerialPort({
   path: "/dev/ttyACM0",
   baudRate: 115200,
   autoOpen: false,
 });
+
+const parser = arduinoPort.pipe(new ByteLengthParser({ length: 8 }));
 
 arduinoPort.open(function (err) {
   if (err) {
@@ -45,5 +48,10 @@ arduinoPort.open(function (err) {
 
 arduinoPort.on("data", function (data) {
   console.log("Data:", data);
-  io.emit("serialdata", { data: data });
+  io.emit("serialdata", { data });
+});
+
+parser.on("data", function (data) {
+  console.log("Parser:", data)
+  io.emit("parser", { data });
 });
