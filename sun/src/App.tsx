@@ -1,31 +1,32 @@
 import sunImage from "./assets/sun.png";
 import starsImage from "./assets/stars.jpg";
+import oceanImage from "./assets/ocean.png";
 import { useEffect, useState } from "react";
 import { Slider } from "@mui/material";
 import styled from "@emotion/styled";
-import io from 'socket.io-client';
+import io from "socket.io-client";
 
 export default function App() {
   const [position, setPosition] = useState(sunPosition(0));
   const [time, setTime] = useState(0);
-  const socket = io('http://localhost:8888');
+  const socket = io("http://localhost:8888");
 
   useEffect(() => {
-    socket.on('serial', ({ data }) => {
-      console.log('Saida serial arduino: ', data)
-      const parsedNumber = Number(data.replace('\r', ''))
-      setTime(parsedNumber)
+    socket.on("serial", ({ data }) => {
+      console.log("Saida serial arduino: ", data);
+      const parsedNumber = Number(data.replace("\r", ""));
+      setTime(parsedNumber);
       setPosition(sunPosition(parsedNumber));
     });
-  }, [])
+  }, []);
 
   function sunPosition(time: number): { x: number; y: number } {
-    const maxWidth = window.innerWidth - 200;
+    const maxWidth = window.innerWidth + 500;
     const width = (maxWidth / 24) * time;
     const maxHeight = window.innerHeight;
 
     return {
-      x: width - 70,
+      x: width - 450,
       y:
         (((2 * Math.sqrt(maxHeight)) / maxWidth) * width -
           Math.sqrt(maxHeight)) **
@@ -38,11 +39,25 @@ export default function App() {
     setPosition(sunPosition(value));
   }
 
+  function opacityMap(): number {
+    if (time < 5) {
+      return 1;
+    } else if (time >= 5 && time < 7) {
+      return 1 - (time - 5) / 2;
+    } else if (time >= 7 && time < 17) {
+      return 0;
+    } else if (time >= 17 && time < 19) {
+      return (time - 17) / 2;
+    }
+
+    return 1;
+  }
+
   return (
     <Container>
       <Hours>{time} horas</Hours>
       <Slider
-        sx={{ zIndex: "2", width: "500px" }}
+        sx={{ zIndex: "3", width: "500px" }}
         min={0}
         max={24}
         step={0.1}
@@ -52,12 +67,7 @@ export default function App() {
       <Stars
         src={starsImage}
         style={{
-          opacity:
-            time >= 0 && time <= 6
-              ? 1 - time / 6
-              : time >= 18 && time <= 25
-              ? (time - 18) / 6
-              : 0,
+          opacity: opacityMap(),
         }}
       />
       <Sun
@@ -69,7 +79,8 @@ export default function App() {
           top: position.y + 100 + "px",
           left: position.x + 177.777 + "px",
         }}
-      ></SunShadow>
+      />
+      <Ocean src={oceanImage} />
     </Container>
   );
 }
@@ -101,14 +112,18 @@ const Sun = styled.img`
   position: absolute;
   height: 200px;
   z-index: 1;
-
-  transition: all 0.2s;
 `;
 
 const SunShadow = styled.div`
   position: absolute;
-  box-shadow: 0px 0px 500px 300px #ffde8b;
+  box-shadow: 0px 0px 300px 200px #ffde8b;
   z-index: 0;
+`;
 
-  transition: all 0.2s;
+const Ocean = styled.img`
+  position: absolute;
+  z-index: 2;
+  left: -32px;
+  width: calc(100vw + 64px);
+  top: -75vh;
 `;
