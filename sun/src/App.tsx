@@ -3,10 +3,16 @@ import starsImage from "./assets/stars.jpg";
 import { useState } from "react";
 import { Slider } from "@mui/material";
 import styled from "@emotion/styled";
+import io from 'socket.io-client';
 
 export default function App() {
   const [position, setPosition] = useState(sunPosition(0));
   const [time, setTime] = useState(0);
+  const socket = io('http://localhost:8888');
+  
+  socket.on('serialdata', (data) => {
+    console.log(data)
+  });
 
   function sunPosition(time: number): { x: number; y: number } {
     const maxWidth = window.innerWidth - 200;
