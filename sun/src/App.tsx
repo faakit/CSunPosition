@@ -1,6 +1,6 @@
 import sunImage from "./assets/sun.png";
 import starsImage from "./assets/stars.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Slider } from "@mui/material";
 import styled from "@emotion/styled";
 import io from 'socket.io-client';
@@ -10,12 +10,14 @@ export default function App() {
   const [time, setTime] = useState(0);
   const socket = io('http://localhost:8888');
 
-  socket.on('serial', ({ data }) => {
-    console.log('Saida serial arduino: ', data)
-    const parsedNumber = Number(data.replace('\r', ''))
-    setTime(parsedNumber)
-    setPosition(sunPosition(parsedNumber));
-  });
+  useEffect(() => {
+    socket.on('serial', ({ data }) => {
+      console.log('Saida serial arduino: ', data)
+      const parsedNumber = Number(data.replace('\r', ''))
+      setTime(parsedNumber)
+      setPosition(sunPosition(parsedNumber));
+    });
+  }, [])
 
   function sunPosition(time: number): { x: number; y: number } {
     const maxWidth = window.innerWidth - 200;
@@ -99,10 +101,14 @@ const Sun = styled.img`
   position: absolute;
   height: 200px;
   z-index: 1;
+
+  transition: all 0.2s;
 `;
 
 const SunShadow = styled.div`
   position: absolute;
   box-shadow: 0px 0px 500px 300px #ffde8b;
   z-index: 0;
+
+  transition: all 0.2s;
 `;
