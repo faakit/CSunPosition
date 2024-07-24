@@ -1,2 +1,24 @@
-# Node Modules
-sunPage/node_modules
+# Logs
+sun/logs
+sun/*.log
+sun/npm-debug.log*
+sun/yarn-debug.log*
+sun/yarn-error.log*
+sun/pnpm-debug.log*
+sun/lerna-debug.log*
+
+sun/node_modules
+sun/dist
+sun/dist-ssr
+sun/*.local
+
+# Editor directories and files
+sun/.vscode/*
+sun/!.vscode/extensions.json
+sun/.idea
+sun/.DS_Store
+sun/*.suo
+sun/*.ntvs*
+sun/*.njsproj
+sun/*.sln
+sun/*.sw?
