@@ -1,14 +1,20 @@
 var express = require("express"),
-  app = express(),
+  app = express({}),
   server = require("http").Server(app),
   io = require("socket.io")(server),
-  port = 8888;
+  port = 8888,
+  cors = require("cors");
 
 //Server start
 server.listen(port, () => console.log("on port" + port));
 
 //user server
 app.use(express.static(__dirname + "/public"));
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 
 io.on("connection", onConnection);
 
@@ -27,7 +33,7 @@ var arduinoPort = new SerialPort({
 
 arduinoPort.open(function (err) {
   if (err) {
-    return console.log('Error opening port: ', err.message)
+    return console.log("Error opening port: ", err.message);
   }
 
   arduinoPort.write("SerialReader connected", function (err) {
@@ -36,9 +42,9 @@ arduinoPort.open(function (err) {
     }
     console.log("message written");
   });
-})
+});
 
 arduinoPort.on("data", function (data) {
   console.log("Data:", data);
-  io.emit('serialdata', { data: data });
+  io.emit("serialdata", { data: data });
 });
