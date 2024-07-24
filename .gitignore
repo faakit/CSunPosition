@@ -8,6 +8,7 @@ sun/pnpm-debug.log*
 sun/lerna-debug.log*
 
 sun/node_modules
+serialReader/node_modules
 sun/dist
 sun/dist-ssr
 sun/*.local
