@@ -1,20 +1,19 @@
 var express = require("express"),
   app = express({}),
   server = require("http").Server(app),
-  io = require("socket.io")(server),
-  port = 8888,
-  cors = require("cors");
+  io = require("socket.io")(server, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    }
+  }),
+  port = 8888;
 
 //Server start
 server.listen(port, () => console.log("on port" + port));
 
 //user server
 app.use(express.static(__dirname + "/public"));
-app.use(
-  cors({
-    origin: "*",
-  })
-);
 
 io.on("connection", onConnection);
 
