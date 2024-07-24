@@ -3,10 +3,28 @@ import starsImage from "./assets/stars.jpg";
 import { useState } from "react";
 import { Slider } from "@mui/material";
 import styled from "@emotion/styled";
+import { SerialPort } from "serialport";
 
 export default function App() {
   const [position, setPosition] = useState(sunPosition(0));
   const [time, setTime] = useState(0);
+  // mudem isso aqui pra porta e o baudRate que vcs estão usando aí
+  const port = new SerialPort({
+    path: "/dev/ttyACM0",
+    baudRate: 115200,
+  });
+
+  port.write("SerialReader connected", function (err) {
+    if (err) {
+      return console.log("Error on write: ", err.message);
+    }
+    console.log("message written");
+  });
+
+  // Read data that is available but keep the stream in "paused mode"
+  port.on("data", function (data) {
+    console.log("Data:", data);
+  });
 
   function sunPosition(time: number): { x: number; y: number } {
     const maxWidth = window.innerWidth - 200;
@@ -36,7 +54,7 @@ export default function App() {
         max={24}
         step={0.1}
         value={time}
-        onChange={(e, value) => sliderHandler(value as number)}
+        onChange={(_, value) => sliderHandler(value as number)}
       />
       <Stars
         src={starsImage}
