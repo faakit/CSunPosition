@@ -9,13 +9,10 @@ export default function App() {
   const [position, setPosition] = useState(sunPosition(0));
   const [time, setTime] = useState(0);
   const socket = io('http://localhost:8888');
-  
-  socket.on('serialdata', (data) => {
-    console.log('serialdata: ', data)
-  });
 
-  socket.on('parser', (data) => {
+  socket.on('serial', (data) => {
     console.log('parser: ', data)
+    setTime(Number(data))
   });
 
   function sunPosition(time: number): { x: number; y: number } {

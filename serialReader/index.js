@@ -23,7 +23,7 @@ function onConnection(socket) {
 }
 
 const { SerialPort } = require("serialport");
-const { ByteLengthParser } = require("@serialport/parser-byte-length");
+const { ReadlineParser } = require("@serialport/parser-readline");
 
 const arduinoPort = new SerialPort({
   path: "/dev/ttyACM0",
@@ -31,7 +31,8 @@ const arduinoPort = new SerialPort({
   autoOpen: false,
 });
 
-const parser = arduinoPort.pipe(new ByteLengthParser({ length: 8 }));
+const parser = new ReadlineParser();
+arduinoPort.pipe(parser);
 
 arduinoPort.open(function (err) {
   if (err) {
@@ -46,12 +47,7 @@ arduinoPort.open(function (err) {
   });
 });
 
-arduinoPort.on("data", function (data) {
-  console.log("Data:", data);
-  io.emit("serialdata", { data });
-});
-
-parser.on("data", function (data) {
-  console.log("Parser:", data)
+parser.on("serial", function (data) {
+  console.log("Parser:", data);
   io.emit("parser", { data });
 });
