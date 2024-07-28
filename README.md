@@ -38,3 +38,8 @@ int main() {
   return 0;
 }
 ```
+
+## Hardware Used
+- Arduino UNO
+- MPU 6050
+- 1x ServoMotor
