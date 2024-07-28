@@ -2,6 +2,8 @@
 
 Sun position calculations in C based on Astronomy Answers articles about [position of the sun](http://aa.quae.nl/en/reken/zonpositie.html).
 
+With the article, [this mathematical model](https://www.geogebra.org/m/hspd5fyv) were implemented to guide on the code development.
+
 ## Usage example
 
 The getPosition function receives 3 parameters:
@@ -39,7 +41,35 @@ int main() {
 }
 ```
 
-## Hardware Used
+# Sun timelapse
+
+For the sun timelapse preview were used React + Vite for the main page and express NodeJs socket to communicate with the Aduino via Serial Port.
+
+## React + Vite page
+
+The sun follows a second grade funtion and adapts the path depending o the size of the screen.
+
+It get the information of time from the socket subscription.
+
+### Usage
+
+After installing the depencdencies run this simple command on terminal. Note that for it to work, the socket has to be running.
+``` bash
+npm run dev
+```
+
+## NodeJs socket
+
+Using serialport lib the connection with the Arduino serial port is established. Then, using express, a socket is set up to send the information to the React page.
+
+### Usage
+
+After installing the depencdencies run this simple command on terminal. Note that for it to work, the socket has to be running.
+``` bash
+node indes.js
+```
+
+# Used hardware
 - Arduino UNO
 - MPU 6050
 - 1x ServoMotor
