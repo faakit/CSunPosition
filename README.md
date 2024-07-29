@@ -47,9 +47,9 @@ For the sun timelapse preview were used React + Vite for the main page and expre
 
 ## React + Vite page
 
-The sun follows a second grade funtion and adapts the path depending o the size of the screen.
+The sun image follows a second grade funtion and adapts its path depending o the size of the screen.
 
-It get the information of time from the socket subscription.
+The information of time comes from the socket subscription.
 
 ### Usage
 
