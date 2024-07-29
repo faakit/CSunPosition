@@ -47,7 +47,7 @@ For the sun timelapse preview were used React + Vite for the main page and expre
 
 ## React + Vite page
 
-The sun image follows a second grade funtion and adapts its path depending o the size of the screen.
+The sun image follows a second grade funtion and adapts its path depending on the size of the screen.
 
 The information of time comes from the socket subscription.
 
@@ -60,7 +60,7 @@ npm run dev
 
 ## NodeJs socket
 
-Using serialport lib the connection with the Arduino serial port is established. Then, using express, a socket is set up to send the information to the React page.
+Using serialport lib, the connection with the Arduino serial port is established. Then, using express, a socket is set up to send the information to the React page.
 
 ### Usage
 
