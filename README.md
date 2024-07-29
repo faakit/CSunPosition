@@ -64,7 +64,7 @@ Using serialport lib the connection with the Arduino serial port is established.
 
 ### Usage
 
-After installing the depencdencies run this simple command on terminal. Note that for it to work, the post and baud rate need to be set to the according Arduino port.
+After installing the depencdencies run this simple command on terminal. Note that for it to work, the port and baud rate need to be set to the according Arduino USB connection.
 ``` bash
 node indes.js
 ```
