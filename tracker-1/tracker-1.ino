@@ -13,7 +13,7 @@ int i2c_add = 0x68;
 /**************CODIGO ADAPTADO DO SITE SUNCALC.ORG*******************/
 /********************************************************************/
 
-unsigned long long EPOCH = 1721849318; // mudar na hora de executar
+unsigned long EPOCH = 1721849318UL; // mudar na hora de executar
 double LAT = -20.27278;
 double LNG = -40.30556;
 
@@ -28,7 +28,7 @@ struct Position {
     double rotation;
 };
 
-const double dayMs = 60 * 60 * 24;
+const double dayMs = 60.0 * 60.0 * 24.0;
 const double J1970 = 2440588;
 const double J2000 = 2451545;
 const double J0 = 0.0009;
