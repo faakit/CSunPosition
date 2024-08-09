@@ -5,9 +5,6 @@
 #define RAD (PI / 180)
 
 const double dayMs = 60.0 * 60.0 * 24.0;
-const double J1970 = 2440588UL;
-const double J2000 = 2451545UL;
-const double J0 = 0.0009;
 const double e = RAD * 23.4397;
 
 typedef struct {

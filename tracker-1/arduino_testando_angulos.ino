@@ -155,12 +155,6 @@ void setup() {
     agr = millis();
     init_position = getPosition(EPOCH,LAT,LNG);
     target = init_position.azimuth-90.0;
-
-    Serial.println("altitude");
-    Serial.println(init_position.altitude*DEG);
-
-    Serial.println("azimuth");
-    Serial.println(init_position.azimuth*DEG);
 }
 
 double normalize(int16_t reading){
